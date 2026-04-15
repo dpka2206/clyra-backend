@@ -4,7 +4,7 @@ import { env } from "./config/env.js";
 
 async function bootstrap() {
   app.listen(env.PORT, () => {
-    console.log(`MedicNCT backend listening on port ${env.PORT}`);
+    console.log(`Clyra backend listening on port ${env.PORT}`);
   });
 
   try {

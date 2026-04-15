@@ -120,9 +120,14 @@ consultationRouter.post(
         audioBuffer: file.buffer,
       });
 
-      console.log(`POST /consultations/jobs/${jobId}/audio - Success: Audio uploaded and processing started`);
-      return response.status(202).json({
-        message: "Consultation audio received and processing started",
+      const finishedInline = ["COMPLETED", "APPROVED", "FAILED"].includes(job.status);
+      console.log(
+        `POST /consultations/jobs/${jobId}/audio - Success: Audio uploaded${finishedInline ? " and processed inline" : " and processing started"}`,
+      );
+      return response.status(finishedInline ? 200 : 202).json({
+        message: finishedInline
+          ? "Consultation audio uploaded and processing finished"
+          : "Consultation audio received and processing started",
         job,
       });
     } catch (error) {

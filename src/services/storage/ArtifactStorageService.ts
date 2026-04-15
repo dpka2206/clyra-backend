@@ -1,9 +1,12 @@
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 
 export class ArtifactStorageService {
-  private rootDirectory = path.resolve(process.cwd(), ".runtime-artifacts", "consultation-jobs");
+  private rootDirectory = process.env.VERCEL
+    ? path.join(os.tmpdir(), "consultation-jobs")
+    : path.resolve(process.cwd(), ".runtime-artifacts", "consultation-jobs");
 
   private async ensureJobDirectory(jobId: string) {
     const jobDirectory = path.join(this.rootDirectory, jobId);

@@ -14,6 +14,8 @@ export type SarvamTranscriptResult = {
   provider: "sarvam";
 };
 
+const SUPPORTED_REGIONAL_LANGUAGE_LABEL = "te-IN/hi-IN";
+
 export class SarvamService {
   private client = env.SARVAM_API_KEY ? new SarvamAIClient({ apiSubscriptionKey: env.SARVAM_API_KEY }) : null;
 
@@ -68,7 +70,7 @@ export class SarvamService {
 
     const job = await this.client.speechToTextTranslateJob.createJob({
       prompt:
-        "This is a Telugu outpatient consultation between a doctor and patient. Translate it into clear English while preserving medicine names, dosage instructions, symptoms, and clinically important meaning.",
+        "This is an outpatient consultation between a doctor and patient. The speech may be in Telugu, Hindi, or mixed Telugu-Hindi with English medical terms. Translate it into clear English while preserving medicine names, dosage instructions, symptoms, and clinically important meaning.",
       withDiarization: true,
       numSpeakers: 2,
     });
@@ -97,7 +99,7 @@ export class SarvamService {
     return {
       transcript: normalizedTranscript,
       rawTranscript: translatedText.trim(),
-      sourceLanguage: "te-IN",
+      sourceLanguage: SUPPORTED_REGIONAL_LANGUAGE_LABEL,
       provider: "sarvam",
     };
   }

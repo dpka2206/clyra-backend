@@ -31,7 +31,7 @@ app.get("/", (_request, response) => {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MedicNCT Backend</title>
+    <title>Clyra Backend</title>
     <style>
       body { font-family: Arial, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; }
       main { max-width: 760px; margin: 64px auto; background: white; padding: 32px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08); }
@@ -41,7 +41,7 @@ app.get("/", (_request, response) => {
   </head>
   <body>
     <main>
-      <h1>MedicNCT backend is running</h1>
+      <h1>Clyra backend is running</h1>
       <p>This service is available on <code>http://localhost:4000</code>.</p>
       <p>API health check: <a href="/api/v1/health">/api/v1/health</a></p>
       <p>If you opened plain <code>localhost</code>, that is a different service on port 80.</p>

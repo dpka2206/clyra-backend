@@ -14,7 +14,7 @@ export const apiRouter = Router();
 apiRouter.get("/health", (_request, response) => {
   response.json({
     status: "ok",
-    service: "medicnct-backend",
+    service: "clyra-backend",
     timestamp: new Date().toISOString(),
   });
 });

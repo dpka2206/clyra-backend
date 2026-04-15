@@ -19,6 +19,7 @@ import { s3Service } from "../../services/storage/S3Service.js";
 import { ApiError } from "../../utils/ApiError.js";
 
 const activeProcessingJobs = new Set<string>();
+const isServerlessRuntime = Boolean(process.env.VERCEL);
 
 export async function createAudioUploadLink(fileName: string, contentType: string) {
   return s3Service.createPrivateUploadUrl(fileName, contentType);
@@ -220,7 +221,7 @@ async function processConsultationJob(jobId: string) {
         const transcript = await geminiService.transcribeConsultationAudio(audioBuffer, mimeType);
         transcriptResult = {
           transcript,
-          sourceLanguage: "te-IN",
+          sourceLanguage: "te-IN/hi-IN",
           provider: "gemini",
         };
         console.log(`Job ${jobId}: Gemini fallback transcription successful`);
@@ -283,6 +284,12 @@ export async function uploadConsultationJobAudio(input: {
   job.status = "AUDIO_READY";
   job.errorMessage = "";
   await job.save();
+
+  if (isServerlessRuntime) {
+    console.log(`Job ${input.jobId}: Processing inline for serverless runtime...`);
+    await processConsultationJob(job.jobId);
+    return getConsultationJob(job.jobId);
+  }
 
   console.log(`Job ${input.jobId}: Queuing job for processing...`);
   queueConsultationJob(job.jobId);
