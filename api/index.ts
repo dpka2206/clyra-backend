@@ -1,7 +1,7 @@
-import { app } from "../dist/app.js";
-import { connectDatabase } from "../dist/config/db.js";
+import { app } from "../src/app.js";
+import { connectDatabase } from "../src/config/db.js";
 
-let databaseReadyPromise = null;
+let databaseReadyPromise: Promise<void> | null = null;
 
 async function ensureDatabaseReady() {
   if (!databaseReadyPromise) {
@@ -20,18 +20,14 @@ export const config = {
   },
 };
 
-export default async function handler(request, response) {
+export default async function handler(request: Parameters<typeof app>[0], response: Parameters<typeof app>[1]) {
   try {
     await ensureDatabaseReady();
     return app(request, response);
   } catch (error) {
     console.error("Vercel handler bootstrap failed", error);
-    response.statusCode = 500;
-    response.setHeader("Content-Type", "application/json");
-    response.end(
-      JSON.stringify({
-        message: "Backend initialization failed",
-      }),
-    );
+    response.status(500).json({
+      message: "Backend initialization failed",
+    });
   }
 }
