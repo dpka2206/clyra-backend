@@ -24,6 +24,14 @@ type RegisterInput = {
   };
 };
 
+const DEFAULT_DOCTOR_AVAILABILITY = [
+  { day: "Monday", startTime: "09:00", endTime: "13:00" },
+  { day: "Tuesday", startTime: "09:00", endTime: "13:00" },
+  { day: "Wednesday", startTime: "09:00", endTime: "13:00" },
+  { day: "Thursday", startTime: "09:00", endTime: "13:00" },
+  { day: "Friday", startTime: "09:00", endTime: "13:00" },
+];
+
 export async function registerUser(input: RegisterInput) {
   const existingUser = await UserModel.findOne({
     $or: [{ email: input.email }, { phone: input.phone }],
@@ -50,6 +58,8 @@ export async function registerUser(input: RegisterInput) {
       name: input.profile.name,
       specialization: input.profile.specialization ?? "General Medicine",
       department: input.profile.department ?? "General",
+      consultationDuration: 15,
+      availability: DEFAULT_DOCTOR_AVAILABILITY,
     });
   }
 
@@ -162,5 +172,50 @@ export async function getCurrentUser(userId: string) {
     throw new ApiError(404, "User not found");
   }
 
-  return user;
+  if (user.role === "Doctor") {
+    const doctorProfile = await DoctorProfileModel.findOne({
+      userId: user._id,
+      isDeleted: false,
+    }).lean();
+
+    return {
+      ...user.toObject(),
+      profile: doctorProfile
+        ? {
+            id: doctorProfile._id.toString(),
+            name: doctorProfile.name,
+            specialization: doctorProfile.specialization,
+            department: doctorProfile.department,
+            consultationDuration: doctorProfile.consultationDuration,
+            availability: doctorProfile.availability,
+          }
+        : null,
+    };
+  }
+
+  if (user.role === "Patient") {
+    const patientProfile = await PatientProfileModel.findOne({
+      userId: user._id,
+      isDeleted: false,
+    }).lean();
+
+    return {
+      ...user.toObject(),
+      profile: patientProfile
+        ? {
+            id: patientProfile._id.toString(),
+            name: patientProfile.name,
+            age: patientProfile.age,
+            gender: patientProfile.gender,
+            bloodGroup: patientProfile.bloodGroup,
+            fourKeySummary: patientProfile.fourKeySummary,
+          }
+        : null,
+    };
+  }
+
+  return {
+    ...user.toObject(),
+    profile: null,
+  };
 }

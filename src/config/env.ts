@@ -12,6 +12,8 @@ const envSchema = z.object({
   REFRESH_TOKEN_SECRET: z.string().min(32, "REFRESH_TOKEN_SECRET must be at least 32 characters"),
   ACCESS_TOKEN_TTL: z.string().default("15m"),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
+  SARVAM_API_KEY: z.string().optional(),
+  SARVAM_STT_PTU_ID: z.coerce.number().int().positive().optional(),
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().default("gemini-1.5-flash"),
   AWS_REGION: z.string().default("ap-south-1"),
